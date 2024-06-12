@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block page_title %}
+
+        {% endblock page_title %}</title>
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+
+
+    <style>
+        .jombotron {
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #e9ecef;
+        }
+    </style>
+
+</head>
+
+<body>
+
+
+    {% include "inc/navbar.html" %}
+
+    <div class="jombotron">
+
+        {% block content %}
+
+        {% endblock content %}
+
+
+    </div>
+</body>
+
+</html>
