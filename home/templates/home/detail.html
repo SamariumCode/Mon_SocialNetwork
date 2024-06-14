@@ -1,0 +1,23 @@
+{% extends '_base.html' %}
+
+
+{% block page_title %}
+	Detail
+{% endblock %}
+
+
+
+{% block content %}
+
+
+        <p>{{ post.user.username }} - {{ post.updated|date:"Y-M" }}</p>
+
+
+        <p>{{ post.body }}</p>
+
+
+
+
+
+
+{% endblock %}

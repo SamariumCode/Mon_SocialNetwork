@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 
 from .forms import UserRegisterForm, UserLoginForm, UserProfileForm
+from home.models import Post
 
 
 class UserRegisterView(View):
@@ -75,7 +76,8 @@ class UserProfileView(LoginRequiredMixin, View):
     def get(self, request, pk):
         user = User.objects.get(pk=pk)
         form = self.form_class(instance=user)
-        return render(request, self.template_name, {'user': user, 'form': form})
+        post = Post.objects.filter(user=user)
+        return render(request, self.template_name, {'user': user, 'form': form, 'posts': post})
 
     def post(self, request, pk):
         user = User.objects.get(pk=pk)
