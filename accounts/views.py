@@ -1,7 +1,7 @@
 from django.views import View
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
 from .forms import UserRegisterForm, UserLoginForm
@@ -10,6 +10,12 @@ from .forms import UserRegisterForm, UserLoginForm
 class UserRegisterView(View):
     form_class = UserRegisterForm
     template_name = 'accounts/register.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('home:home')
+        else:
+            return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
         form = self.form_class()
@@ -31,6 +37,12 @@ class UserLoginView(View):
     form_class = UserLoginForm
     template_name = 'accounts/login.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('home:home')
+        else:
+            return super().dispatch(request, *args, **kwargs)
+
     def get(self, request):
         form = self.form_class()
         return render(request, self.template_name, {'form': form})
@@ -46,3 +58,10 @@ class UserLoginView(View):
                 return redirect('home:home')
             messages.error(request, 'ایمیل یا رمز عبور شما درست وارد نشده است', extra_tags='warning')
         return render(request, self.template_name, {'form': form})
+
+
+class UserLogoutView(View):
+    def get(self, request):
+        logout(request)
+        messages.success(request, 'شما با موفقیت خارج شدید', extra_tags='success')
+        return redirect('home:home')
