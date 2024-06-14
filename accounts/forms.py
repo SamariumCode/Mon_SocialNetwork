@@ -1,4 +1,6 @@
 from django import forms
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 
 class UserRegisterForm(forms.Form):
@@ -8,3 +10,17 @@ class UserRegisterForm(forms.Form):
         attrs={'class': 'form-control'}))
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'your password'}))
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        user = User.objects.filter(email=email).exists()
+        if user:
+            raise ValidationError('این کاربر قبلا ثبت شده است')
+        return email
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        user = User.objects.filter(username=username).exists()
+        if user:
+            raise ValidationError("کاربری با این نام کاربری وجود دارد")
+        return username
