@@ -43,3 +43,9 @@ class UserLoginForm(forms.Form):
 
     password = forms.CharField(widget=forms.PasswordInput(
         attrs={'class': 'form-control'}))
+
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'username', 'email']

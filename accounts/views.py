@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.views import View
 
-from .forms import UserRegisterForm, UserLoginForm
+from .forms import UserRegisterForm, UserLoginForm, UserProfileForm
 
 
 class UserRegisterView(View):
@@ -66,3 +66,22 @@ class UserLogoutView(LoginRequiredMixin, View):
         logout(request)
         messages.success(request, 'شما با موفقیت خارج شدید', extra_tags='success')
         return redirect('home:home')
+
+
+class UserProfileView(LoginRequiredMixin, View):
+    form_class = UserProfileForm
+    template_name = 'accounts/profile.html'
+
+    def get(self, request, pk):
+        user = User.objects.get(pk=pk)
+        form = self.form_class(instance=user)
+        return render(request, self.template_name, {'user': user, 'form': form})
+
+    def post(self, request, pk):
+        user = User.objects.get(pk=pk)
+        form = self.form_class(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'اطلاعات شما با موفقیت تغییر کرد', extra_tags='success')
+            return redirect('home:home')
+        return render(request, self.template_name, {'form': form})
