@@ -21,7 +21,7 @@ class RegisterView(View):
         if form.is_valid():
             cd = form.cleaned_data
             User.objects.create_user(
-                username=cd['username'], email=cd['email'], password=cd['password'])
+                username=cd['username'], email=cd['email'], password=cd['password1'])
             messages.success(
                 request, 'شما با موفقیت ثبت نام شدید', extra_tags='success')
             return redirect('home:home')
