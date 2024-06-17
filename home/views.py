@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render, get_object_or_404
+from django.utils.text import slugify
 from django.views import View
 
 from .models import Post
@@ -45,23 +46,30 @@ class PostDeleteView(LoginRequiredMixin, View):
 class PostUpdateView(LoginRequiredMixin, View):
     form_class = PostUpdateForm
 
+    def setup(self, request, *args, **kwargs):
+        self.post_instance = get_object_or_404(Post, pk=kwargs['pk'])
+        return super().setup(request, *args, **kwargs)
+
     def dispatch(self, request, *args, **kwargs):
-        post = get_object_or_404(Post, pk=kwargs['pk'])
+        post = self.post_instance
         if not post.user.id == request.user.id:
             messages.error(request, 'شما اجازه بروزرسانی پست رو ندارید', extra_tags='danger')
             return redirect('home:home')
         return super().dispatch(request, *args, **kwargs)
 
-    def get(self, request, pk):
-        post = get_object_or_404(Post, pk=pk)
+    def get(self, request, *args, **kwargs):
+        post = self.post_instance
         form = self.form_class(instance=post)
         return render(request, 'home/update.html', {'post': post, 'form': form})
 
-    def post(self, request, pk):
-        post = get_object_or_404(Post, pk=pk)
+    def post(self, request, *args, **kwargs):
+        post = self.post_instance
         form = self.form_class(request.POST, instance=post)
         if form.is_valid():
-            form.save()
+            new_post = form.save(commit=False)
+            new_post.slug = slugify(form.cleaned_data['body'][:30])
+            new_post.save()
+
             messages.success(request, 'اطلاعات پست با موفقیت تغییر کرد', extra_tags='success')
-            return redirect('home:home')
+            return redirect('home:post-detail', post.id, post.slug)
         return render(request, 'home/update.html', {'form': form})
