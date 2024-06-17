@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 
 from .forms import UserRegisterForm, UserLoginForm, UserProfileForm
@@ -72,6 +72,12 @@ class UserLogoutView(LoginRequiredMixin, View):
 class UserProfileView(LoginRequiredMixin, View):
     form_class = UserProfileForm
     template_name = 'accounts/profile.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        user = get_object_or_404(User, pk=kwargs['pk'])
+        if request.user.id != user.id:
+            return redirect('home:home')
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, pk):
         user = User.objects.get(pk=pk)
