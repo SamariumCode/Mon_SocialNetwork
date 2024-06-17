@@ -5,34 +5,35 @@
 {% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h2 class="text-center">{{ user.username }}</h2>
-            <form action="" method="post" novalidate>
-                {% csrf_token %}
-                {{ form.as_p }}
-                <div class="text-center mt-3">
-                    <input type="submit" value="Update" class="btn btn-primary">
+    <div class="container mt-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="text-center">{{ user.username }}</h2>
+                <form action="" method="post" novalidate>
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="text-center mt-3">
+                        <input type="submit" value="Update" class="btn btn-primary">
+                        <a href="{% url 'home:post-create' %}" type="submit" class="btn btn-success">Create Post</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="mt-5">
+            <h1 class="text-center">List of Posts</h1>
+            {% if posts %}
+                <div class="list-group mt-3">
+                    {% for post in posts %}
+                        <div class="list-group-item">
+                            <h5 class="mb-1">Slug: {{ post.slug }}</h5>
+                            <p class="mb-1">Body: {{ post.body }}</p>
+                        </div>
+                    {% endfor %}
                 </div>
-            </form>
+            {% else %}
+                <p class="text-center">No posts available.</p>
+            {% endif %}
         </div>
     </div>
-
-    <div class="mt-5">
-        <h1 class="text-center">List of Posts</h1>
-        {% if posts %}
-            <div class="list-group mt-3">
-                {% for post in posts %}
-                    <div class="list-group-item">
-                        <h5 class="mb-1">Slug: {{ post.slug }}</h5>
-                        <p class="mb-1">Body: {{ post.body }}</p>
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p class="text-center">No posts available.</p>
-        {% endif %}
-    </div>
-</div>
 {% endblock %}
