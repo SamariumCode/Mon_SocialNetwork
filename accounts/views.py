@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 from django.views import View
 
 from .forms import UserRegisterForm, UserLoginForm, UserProfileForm
@@ -80,9 +80,10 @@ class UserProfileView(LoginRequiredMixin, View):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, pk):
-        user = User.objects.get(pk=pk)
+        user = get_object_or_404(User, pk=pk)
         form = self.form_class(instance=user)
         post = Post.objects.filter(user=user)
+        # post = get_list_or_404(Post, user=user)  if the user does not have a post, return page 404
         return render(request, self.template_name, {'user': user, 'form': form, 'posts': post})
 
     def post(self, request, pk):

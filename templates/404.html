@@ -1,0 +1,14 @@
+{% extends '_base.html' %}
+
+{% block title %}404 - Page Not Found{% endblock %}
+
+{% block content %}
+    <div class="container-fluid d-flex justify-content-center align-items-center" style="height: 100vh; background-color: #212529;">
+        <div class="text-center text-white">
+            <i class="fas fa-exclamation-circle fa-5x text-danger"></i>
+            <h1 class="display-4 text-danger">404 - Page Not Found</h1>
+            <p class="lead">Oops! The page you are looking for could not be found.</p>
+            <a href="{% url 'home:home' %}" class="btn btn-danger btn-lg">Go to Homepage</a>
+        </div>
+    </div>
+{% endblock %}
