@@ -22,9 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-vn&jpvldi9h6bgl!+-4p$3)-xaq6v10q=#eh$k++#&7!8bhw3+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -127,3 +127,13 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'accounts.authenticate.EmailBackend',
 ]
+
+# Google Account
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'cactuspydon@gmail.com'
+EMAIL_HOST_PASSWORD = 'demz wnci fxlf ovnq'
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'Cactus Website'

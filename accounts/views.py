@@ -1,8 +1,10 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import views as auth_views
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
+from django.urls import reverse, reverse_lazy
 from django.views import View
 
 from .forms import UserRegisterForm, UserLoginForm, UserProfileForm
@@ -94,3 +96,10 @@ class UserProfileView(LoginRequiredMixin, View):
             messages.success(request, 'اطلاعات شما با موفقیت تغییر کرد', extra_tags='success')
             return redirect('home:home')
         return render(request, self.template_name, {'form': form})
+
+
+class UserPasswordResetView(auth_views.PasswordResetView):
+    template_name = 'accounts/password_reset_form.html'
+    success_url = reverse_lazy('accounts:password_reset_done')
+    email_template_name = 'accounts/password_reset_email.html'
+
