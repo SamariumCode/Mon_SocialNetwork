@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import View
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.messages.views import SuccessMessageMixin
 
 from .forms import UserRegisterForm, UserLoginForm, UserProfileForm
 from home.models import Post
