@@ -6,7 +6,7 @@ from django.shortcuts import render, get_object_or_404
 from django.utils.text import slugify
 from django.views import View
 
-from .models import Post
+from .models import Post, Comment
 from .forms import PostCreateUpdateForm
 
 
@@ -19,7 +19,8 @@ class HomeView(View):
 class PostDetailView(View):
     def get(self, request, pk, slug):
         post = get_object_or_404(Post, pk=pk, slug=slug)
-        return render(request, 'home/detail.html', {'post': post})
+        comments = post.pcomments.filter(is_reply=False)
+        return render(request, 'home/detail.html', {'post': post, 'comments': comments})
 
 
 class PostDeleteView(LoginRequiredMixin, View):
