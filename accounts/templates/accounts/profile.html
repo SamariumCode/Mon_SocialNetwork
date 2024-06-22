@@ -20,6 +20,62 @@
             </div>
         </div>
 
+
+        <div class="mt-5">
+
+            {% if request.user.id != user.id and not is_following %}
+                <a href="{% url 'accounts:user-follow' user.id %}" class="btn btn-dark">Follow</a>
+            {% elif request.user.id != user.id and is_following %}
+                <a href="{% url 'accounts:user-unfollow' user.id %}" class="btn btn-danger">UnFollow</a>
+            {% endif %}
+
+            <div class="mt-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-body bg-light">
+                                <h5 class="card-title text-center mb-4"><strong>Followers</strong></h5>
+                                <ul class="list-group list-group-flush">
+                                    {% if user.followers.count > 0 %}
+                                        {% for follower in user.followers.all %}
+                                            <li class="list-group-item"><a
+                                                    href="{% url 'accounts:user-profile' follower.id %}"
+                                                    class="text-dark">{{ follower.to_user }}</a></li>
+                                        {% endfor %}
+                                    {% else %}
+                                        <li class="list-group-item text-center text-muted">No followers yet.</li>
+                                    {% endif %}
+                                </ul>
+                                <p class="text-center mt-3 text-muted">Total: {{ user.followers.count }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-body bg-light">
+                                <h5 class="card-title text-center mb-4"><strong>Following</strong></h5>
+                                <ul class="list-group list-group-flush">
+                                    {% if user.following.count > 0 %}
+                                        {% for following in user.following.all %}
+                                            <li class="list-group-item"><a
+                                                    href="{% url 'accounts:user-profile' following.id %}"
+                                                    class="text-dark">{{ following.from_user }}</a></li>
+                                        {% endfor %}
+                                    {% else %}
+                                        <li class="list-group-item text-center text-muted">Not following anyone yet.
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                                <p class="text-center mt-3 text-muted">Total: {{ user.following.count }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
         <div class="mt-5">
             <h1 class="text-center">List of Posts</h1>
             {% if posts %}

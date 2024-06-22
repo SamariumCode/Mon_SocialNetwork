@@ -11,6 +11,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 
 from .forms import UserRegisterForm, UserLoginForm, UserProfileForm
 from home.models import Post
+from .models import Relation
 
 
 class UserRegisterView(View):
@@ -78,18 +79,25 @@ class UserProfileView(LoginRequiredMixin, View):
     form_class = UserProfileForm
     template_name = 'accounts/profile.html'
 
-    def dispatch(self, request, *args, **kwargs):
-        user = get_object_or_404(User, pk=kwargs['pk'])
-        if request.user.id != user.id:
-            return redirect('home:home')
-        return super().dispatch(request, *args, **kwargs)
+    # def dispatch(self, request, *args, **kwargs):
+    #     user = get_object_or_404(User, pk=kwargs['pk'])
+    #     if request.user.id != user.id:
+    #         return redirect('home:home')
+    #     return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, pk):
+        is_following = False
         user = get_object_or_404(User, pk=pk)
         form = self.form_class(instance=user)
         post = user.posts.all()
+        relation = Relation.objects.filter(from_user=request.user, to_user=user)
+
+        if relation.exists():
+            is_following = True
+
         # post = get_list_or_404(Post, user=user)  if the user does not have a post, return page 404
-        return render(request, self.template_name, {'user': user, 'form': form, 'posts': post})
+        return render(request, self.template_name,
+                      {'user': user, 'form': form, 'posts': post, 'is_following': is_following})
 
     def post(self, request, pk):
         user = User.objects.get(pk=pk)
@@ -118,3 +126,33 @@ class UserPasswordResetConfirmView(auth_views.PasswordResetConfirmView):
 
 class UserPasswordResetCompleteView(auth_views.PasswordResetCompleteView):
     template_name = 'accounts/password_reset_complete.html'
+
+
+class UserFollowView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+
+        user = get_object_or_404(User, id=pk)
+        if request.user == user:
+            messages.error(request, 'شما نمی‌توانید خودتان را فالو کنید', extra_tags='error')
+            return redirect('accounts:user-profile', user.id)
+
+        relation = Relation.objects.filter(from_user=request.user, to_user=user)
+        if relation.exists():
+            messages.error(request, 'شما در حال حاضر هم این کاربر فالوو می کنید', extra_tags='error')
+        else:
+            Relation.objects.create(from_user=request.user, to_user=user)
+            messages.success(request, 'شما این کاربر رو با موفقیت فالوو کردید', extra_tags='success')
+        return redirect('accounts:user-profile', user.id)
+
+
+class UserUnFollowView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        user = get_object_or_404(User, id=pk)
+        relation = Relation.objects.filter(from_user=request.user, to_user=user)
+        if relation.exists():
+            relation.delete()
+            messages.success(request, 'شما با موفقیت این کاربر رو حذف کردید', extra_tags='success')
+        else:
+            messages.error(request, 'شما این کاربر رو فالوو ندارید', extra_tags='error')
+
+        return redirect('accounts:user-profile', user.id)
