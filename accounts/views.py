@@ -19,6 +19,7 @@ class UserRegisterView(View):
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
+            messages.success(request, 'شما در حال حاضر لاگین هستید', extra_tags='info')
             return redirect('home:home')
         else:
             return super().dispatch(request, *args, **kwargs)
