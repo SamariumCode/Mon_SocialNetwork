@@ -39,13 +39,19 @@
 
     <hr>
 
-    <div class="container mt-4">
-        <form action="" method="post" novalidate class="needs-validation">
-            {% csrf_token %}
-            <div class="form-group">
-                {{ form.as_p }}
-            </div>
-            <button type="submit" class="btn btn-primary">ارسال</button>
-        </form>
-    </div>
+    {% if request.user.is_authenticated %}
+
+        <div class="container mt-4">
+            <form action="" method="post" novalidate class="needs-validation">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.as_p }}
+                </div>
+                <button type="submit" class="btn btn-primary">ارسال</button>
+            </form>
+        </div>
+
+    {% endif %}
+
+
 {% endblock %}
