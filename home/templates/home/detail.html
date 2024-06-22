@@ -8,7 +8,8 @@
     <div class="container mt-4">
         <div class="card">
             <div class="card-header">
-                <a href="{% url 'accounts:user-profile' post.user.id %}">{{ post.user.username }}</a> - {{ post.updated|date:"Y-M" }}
+                <a href="{% url 'accounts:user-profile' post.user.id %}">{{ post.user.username }}</a>
+                - {{ post.updated|date:"Y-M" }}
             </div>
             <div class="card-body">
                 <p>{{ post.body }}</p>
@@ -24,7 +25,7 @@
         <h4>{{ comments.count }} Comments</h4>
         {% for comment in comments %}
             <div class="card mt-3">
-                <div class="card-header bg-dark text-white">
+                <div class="card-header">
                     {{ comment.user }} | {{ comment.created|timesince }}
                 </div>
                 <div class="card-body">
@@ -34,5 +35,17 @@
         {% empty %}
             <p class="text-muted mt-3">No Comments yet.</p>
         {% endfor %}
+    </div>
+
+    <hr>
+
+    <div class="container mt-4">
+        <form action="" method="post" novalidate class="needs-validation">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.as_p }}
+            </div>
+            <button type="submit" class="btn btn-primary">ارسال</button>
+        </form>
     </div>
 {% endblock %}

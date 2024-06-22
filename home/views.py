@@ -7,7 +7,7 @@ from django.utils.text import slugify
 from django.views import View
 
 from .models import Post, Comment
-from .forms import PostCreateUpdateForm
+from .forms import PostCreateUpdateForm, CommentForm
 
 
 class HomeView(View):
@@ -20,7 +20,22 @@ class PostDetailView(View):
     def get(self, request, pk, slug):
         post = get_object_or_404(Post, pk=pk, slug=slug)
         comments = post.pcomments.filter(is_reply=False)
-        return render(request, 'home/detail.html', {'post': post, 'comments': comments})
+        form = CommentForm()
+        return render(request, 'home/detail.html', {'post': post, 'comments': comments, 'form': form})
+
+    def post(self, request, pk, slug):
+        post = get_object_or_404(Post, pk=pk, slug=slug)
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.user = request.user
+            comment.save()
+            messages.success(request, 'نظر شما با موفقیت ذخیره شد', extra_tags='success')
+            return redirect('home:post-detail', pk=post.pk, slug=slug)
+        else:
+            comments = post.pcomments.filter(is_reply=False)
+        return render(request, 'home/detail.html', {'post': post, 'form': form, 'comments': comments})
 
 
 class PostDeleteView(LoginRequiredMixin, View):
