@@ -87,7 +87,7 @@ class UserProfileView(LoginRequiredMixin, View):
     def get(self, request, pk):
         user = get_object_or_404(User, pk=pk)
         form = self.form_class(instance=user)
-        post = Post.objects.filter(user=user)
+        post = user.posts.all()
         # post = get_list_or_404(Post, user=user)  if the user does not have a post, return page 404
         return render(request, self.template_name, {'user': user, 'form': form, 'posts': post})
 
