@@ -12,5 +12,6 @@ urlpatterns = [
     path('post/delete/<int:pk>/', views.PostDeleteView.as_view(), name='post-delete'),
     path('post/update/<int:pk>/', views.PostUpdateView.as_view(), name='post-update'),
     path('post/create/', views.PostCreateView.as_view(), name='post-create'),
+    path('reply/<int:post_pk>/<int:commet_pk>/', views.PostAddReplyView.as_view(), name='add-reply'),
 
 ]

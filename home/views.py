@@ -10,7 +10,7 @@ from slugify import slugify
 from django.views import View
 
 from .models import Post, Comment
-from .forms import PostCreateUpdateForm, CommentForm
+from .forms import PostCreateUpdateForm, CommentForm, CommentReplyForm
 
 
 class HomeView(View):
@@ -21,6 +21,7 @@ class HomeView(View):
 
 class PostDetailView(View):
     form_class = CommentForm
+    form_class_reply = CommentReplyForm
 
     def setup(self, request, *args, **kwargs):
         self.post_instance = get_object_or_404(
@@ -30,7 +31,7 @@ class PostDetailView(View):
     def get(self, request, pk, slug):
         comments = self.post_instance.pcomments.filter(is_reply=False)
         return render(request, 'home/detail.html',
-                      {'post': self.post_instance, 'comments': comments, 'form': self.form_class})
+                      {'post': self.post_instance, 'comments': comments, 'form': self.form_class, 'reply_form': self.form_class_reply})
 
     @method_decorator(login_required)
     def post(self, request, pk, slug):
@@ -54,7 +55,7 @@ class PostDeleteView(LoginRequiredMixin, View):
 
     def dispatch(self, request, *args, **kwargs):
         post = get_object_or_404(Post, pk=kwargs['pk'])
-    
+
         if not post.user.id == request.user.id:
             messages.error(
                 request, 'شما اجازه حذف این پست رو ندارید', extra_tags='danger')
@@ -126,3 +127,23 @@ class PostCreateView(LoginRequiredMixin, View):
             return redirect('home:post-detail', new_post.id, new_post.slug)
 
         return render(request, 'home/create.html', {'form': form})
+
+
+class PostAddReplyView(LoginRequiredMixin, View):
+    form_class = CommentReplyForm
+
+    def post(self, request, post_pk, commet_pk):
+        post = get_object_or_404(Post, pk=post_pk)
+        comment = get_object_or_404(Comment, pk=commet_pk)
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+            reply = form.save(commit=False)
+            reply.user = request.user
+            reply.post = post
+            reply.reply = comment
+            reply.is_reply = True
+            reply.save()
+            messages.success(
+                request, 'نظر شما با موفقیت ثبت شد', extra_tags='success')
+        return redirect('home:post-detail', post.pk, post.slug)
