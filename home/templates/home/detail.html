@@ -1,57 +1,68 @@
 {% extends '_base.html' %}
 
 {% block page_title %}
-    Detail
+Detail
 {% endblock %}
 
 {% block content %}
-    <div class="container mt-4">
-        <div class="card">
-            <div class="card-header">
-                <a href="{% url 'accounts:user-profile' post.user.id %}">{{ post.user.username }}</a>
-                - {{ post.updated|date:"Y-M" }}
-            </div>
-            <div class="card-body">
-                <p>{{ post.body }}</p>
-            </div>
-            {% if request.user.id == post.user.id %}
-                <div class="card-footer">
-                    <a href="{% url 'home:post-delete' post.pk %}" class="btn btn-danger">Delete</a>
-                    <a href="{% url 'home:post-update' post.pk %}" class="btn btn-info">Update</a>
-                </div>
-            {% endif %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <a href="{% url 'accounts:user-profile' post.user.id %}">{{ post.user.username }}</a>
+            - {{ post.updated|date:"Y-M" }}
         </div>
-        <hr>
-        <h4>{{ comments.count }} Comments</h4>
-        {% for comment in comments %}
-            <div class="card mt-3">
-                <div class="card-header">
-                    {{ comment.user }} | {{ comment.created|timesince }}
-                </div>
-                <div class="card-body">
-                    <p>{{ comment.body }}</p>
-                </div>
-            </div>
-        {% empty %}
-            <p class="text-muted mt-3">No Comments yet.</p>
-        {% endfor %}
+        <div class="card-body">
+            <p>{{ post.body }}</p>
+        </div>
+        {% if request.user.id == post.user.id %}
+        <div class="card-footer">
+            <a href="{% url 'home:post-delete' post.pk %}" class="btn btn-danger">Delete</a>
+            <a href="{% url 'home:post-update' post.pk %}" class="btn btn-info">Update</a>
+        </div>
+        {% endif %}
     </div>
-
     <hr>
-
-    {% if request.user.is_authenticated %}
-
-        <div class="container mt-4">
-            <form action="" method="post" novalidate class="needs-validation">
-                {% csrf_token %}
-                <div class="form-group">
-                    {{ form.as_p }}
-                </div>
-                <button type="submit" class="btn btn-primary">ارسال</button>
-            </form>
+    <h4>{{ comments.count }} Comments</h4>
+    {% for comment in comments %}
+    <div class="card mt-3">
+        <div class="card-header">
+            {{ comment.user }} | {{ comment.created|timesince }}
+        </div>
+        <div class="card-body">
+            <p>{{ comment.body }}</p>
         </div>
 
-    {% endif %}
+        {% with replies=comment.rcomments.all %}
+
+
+            {% for reply in replies %}
+
+                <p class="bg-danger p-4 m-2"> {{reply.user}} <br> {{reply.body}} </p>
+
+            {% endfor %}
+
+        {% endwith %}
+    </div>
+    {% empty %}
+    <p class="text-muted mt-3">No Comments yet.</p>
+    {% endfor %}
+</div>
+
+<hr>
+
+{% if request.user.is_authenticated %}
+
+<div class="container mt-4">
+    <form action="" method="post" novalidate class="needs-validation">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+        <button type="submit" class="btn btn-primary">ارسال</button>
+    </form>
+</div>
+
+{% endif %}
 
 
 {% endblock %}

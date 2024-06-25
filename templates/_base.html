@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block page_title %}
 
-    {% endblock page_title %}</title>
+        {% endblock page_title %}</title>
 
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
@@ -18,10 +18,12 @@
         }
 
         body {
-            font-family: 'Tahoma', sans-serif;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+
+            font-size: 14px;
+
+            color: black;
         }
-
-
     </style>
 
 </head>
@@ -29,20 +31,20 @@
 <body>
 
 
-{% include "inc/navbar.html" %}
+    {% include "inc/navbar.html" %}
 
-<div class="jombotron">
-
-
-    {% include "inc/messages.html" %}
+    <div class="jombotron">
 
 
-    {% block content %}
-
-    {% endblock content %}
+        {% include "inc/messages.html" %}
 
 
-</div>
+        {% block content %}
+
+        {% endblock content %}
+
+
+    </div>
 </body>
 
 </html>

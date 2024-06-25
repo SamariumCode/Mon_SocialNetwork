@@ -13,22 +13,6 @@ from .models import Post, Comment
 from .forms import PostCreateUpdateForm, CommentForm
 
 
-def persian_to_slug(text):
-    persian_to_latin_map = {
-        'آ': 'a', 'ا': 'a', 'ب': 'b', 'پ': 'p', 'ت': 't', 'ث': 's', 'ج': 'j',
-        'چ': 'ch', 'ح': 'h', 'خ': 'kh', 'د': 'd', 'ذ': 'z', 'ر': 'r', 'ز': 'z',
-        'ژ': 'zh', 'س': 's', 'ش': 'sh', 'ص': 's', 'ض': 'z', 'ط': 't', 'ظ': 'z',
-        'ع': 'e', 'غ': 'gh', 'ف': 'f', 'ق': 'gh', 'ک': 'k', 'گ': 'g', 'ل': 'l',
-        'م': 'm', 'ن': 'n', 'و': 'v', 'ه': 'h', 'ی': 'y', 'ئ': 'y', ' ': '-',
-        '‌': '-'
-    }
-
-    slug = ''.join(persian_to_latin_map.get(char, '') for char in text)
-    slug = ''.join(char for char in slug if char.isalnum() or char == '-')
-    slug = slug.strip('-')
-    return slug
-
-
 class HomeView(View):
     def get(self, request):
         posts = Post.objects.all()
@@ -70,7 +54,7 @@ class PostDeleteView(LoginRequiredMixin, View):
 
     def dispatch(self, request, *args, **kwargs):
         post = get_object_or_404(Post, pk=kwargs['pk'])
-
+    
         if not post.user.id == request.user.id:
             messages.error(
                 request, 'شما اجازه حذف این پست رو ندارید', extra_tags='danger')
@@ -114,7 +98,7 @@ class PostUpdateView(LoginRequiredMixin, View):
         form = self.form_class(request.POST, instance=post)
         if form.is_valid():
             new_post = form.save(commit=False)
-            new_post.slug = persian_to_slug(form.cleaned_data['body'][:30])
+            new_post.slug = slugify(form.cleaned_data['body'][:30])
             new_post.save()
 
             messages.success(
@@ -134,7 +118,7 @@ class PostCreateView(LoginRequiredMixin, View):
         form = self.form_class(request.POST)
         if form.is_valid():
             new_post = form.save(commit=False)
-            new_post.slug = persian_to_slug(form.cleaned_data['body'][:30])
+            new_post.slug = slugify(form.cleaned_data['body'][:30])
             new_post.user = request.user
             new_post.save()
             messages.success(
