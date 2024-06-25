@@ -15,3 +15,8 @@ class PostAdmin(admin.ModelAdmin):
 class CommentAdmin(admin.ModelAdmin):
     list_display = ('user', 'post', 'created', 'is_reply')
     raw_id_fields = ('user', 'post', 'reply')
+
+
+@admin.register(models.Vote)
+class VoteAdmin(admin.ModelAdmin):
+    list_display = ('user', 'post',)

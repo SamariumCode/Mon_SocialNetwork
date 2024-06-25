@@ -9,7 +9,7 @@ from django.utils.decorators import method_decorator
 from slugify import slugify
 from django.views import View
 
-from .models import Post, Comment
+from .models import Post, Comment, Vote
 from .forms import PostCreateUpdateForm, CommentForm, CommentReplyForm
 
 
@@ -29,9 +29,14 @@ class PostDetailView(View):
         return super().setup(request, *args, **kwargs)
 
     def get(self, request, pk, slug):
+        can_like = False
+        if request.user.is_authenticated and self.post_instance.user_can_like(request.user):
+            can_like = True
+
         comments = self.post_instance.pcomments.filter(is_reply=False)
         return render(request, 'home/detail.html',
-                      {'post': self.post_instance, 'comments': comments, 'form': self.form_class, 'reply_form': self.form_class_reply})
+                      {'post': self.post_instance, 'comments': comments, 'form': self.form_class,
+                       'reply_form': self.form_class_reply, 'can_like': can_like})
 
     @method_decorator(login_required)
     def post(self, request, pk, slug):
@@ -146,4 +151,29 @@ class PostAddReplyView(LoginRequiredMixin, View):
             reply.save()
             messages.success(
                 request, 'نظر شما با موفقیت ثبت شد', extra_tags='success')
+        return redirect('home:post-detail', post.pk, post.slug)
+
+
+class PostLikeView(LoginRequiredMixin, View):
+
+    # def dispatch(self, request, *args, **kwargs):
+    #     post = get_object_or_404(Post, pk=kwargs['pk'])
+    #     vote = Vote.objects.filter(post=post, user=request.user)
+    #
+    #     if vote.exists():
+    #         if vote.first().user == request.user:
+    #             messages.error(request, 'شما قبلاً این پست را لایک کرده‌اید', extra_tags='danger')
+    #             return redirect('home:home')
+    #
+    #     return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        like = Vote.objects.filter(post=post, user=request.user)
+
+        if like.exists():
+            messages.error(request, 'شما این پست رو قبلا لایک کردید', extra_tags='danger')
+        else:
+            Vote.objects.create(post=post, user=request.user)
+            messages.success(request, 'شما این پست رو لایک کردید', extra_tags='success')
         return redirect('home:post-detail', post.pk, post.slug)
