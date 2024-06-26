@@ -39,7 +39,7 @@
                                     {% if user.followers.count > 0 %}
                                         {% for follower in user.followers.all %}
                                             <li class="list-group-item"><a
-                                                    href="{% url 'accounts:user-profile' follower.id %}"
+                                                    href="{% url 'accounts:user-profile' %}"
                                                     class="text-dark">{{ follower.to_user }}</a></li>
                                         {% endfor %}
                                     {% else %}
@@ -58,7 +58,7 @@
                                     {% if user.following.count > 0 %}
                                         {% for following in user.following.all %}
                                             <li class="list-group-item"><a
-                                                    href="{% url 'accounts:user-profile' following.id %}"
+                                                    href="{% url 'accounts:user-profile' %}"
                                                     class="text-dark">{{ following.from_user }}</a></li>
                                         {% endfor %}
                                     {% else %}

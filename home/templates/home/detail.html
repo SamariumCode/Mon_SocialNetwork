@@ -8,7 +8,7 @@
     <div class="container mt-4">
         <div class="card">
             <div class="card-header">
-                <a href="{% url 'accounts:user-profile' post.user.id %}"
+                <a href="{% url 'accounts:user-profile' %}"
                    class="text-decoration-none">{{ post.user.username }}</a>
                 - {{ post.updated|date:"Y-M" }}
             </div>
