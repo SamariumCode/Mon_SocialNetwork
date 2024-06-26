@@ -10,13 +10,19 @@ from slugify import slugify
 from django.views import View
 
 from .models import Post, Comment, Vote
-from .forms import PostCreateUpdateForm, CommentForm, CommentReplyForm
+from .forms import PostCreateUpdateForm, CommentForm, CommentReplyForm, PostSearchForm
 
 
 class HomeView(View):
+    form_class = PostSearchForm
+
     def get(self, request):
         posts = Post.objects.all()
-        return render(request, 'home/index.html', {'posts': posts})
+
+        if request.GET.get('search'):
+            posts = posts.filter(body__icontains=request.GET['search'])
+
+        return render(request, 'home/index.html', {'posts': posts, 'form': self.form_class})
 
 
 class PostDetailView(View):

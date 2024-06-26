@@ -13,14 +13,15 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = ['body']
         widgets = {
-            'body': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'لطفاً نظرتان را در اینجا بنویسید'}),
+            'body': forms.Textarea(
+                attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'لطفاً نظرتان را در اینجا بنویسید'}),
         }
 
 
 class CommentReplyForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ['body',]
+        fields = ['body', ]
         widgets = {
             'body': forms.Textarea(attrs={
                 'placeholder': 'Enter your comment here...',
@@ -28,3 +29,7 @@ class CommentReplyForm(forms.ModelForm):
                 'class': 'form-control'
             }),
         }
+
+
+class PostSearchForm(forms.Form):
+    search = forms.CharField()
