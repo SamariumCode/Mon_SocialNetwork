@@ -92,32 +92,34 @@ class UserProfileView(LoginRequiredMixin, View):
     #         return redirect('home:home')
     #     return super().dispatch(request, *args, **kwargs)
 
-    def get(self, request):
+    def get(self, request, pk):
         is_following = False
-        # user = get_object_or_404(User)
+        user = get_object_or_404(User, pk=pk)
         form = self.form_class(instance=request.user, initial={
-            'age': request.user.profile.age,
-            'bio': request.user.profile.bio,
+            'age': user.profile.age,
+            'bio': user.profile.bio,
         })
-        post = request.user.posts.all()
-        relation = Relation.objects.filter(from_user=request.user, to_user=request.user)
+        posts = user.posts.all()
+        relation = Relation.objects.filter(from_user=request.user, to_user=user)
 
         if relation.exists():
             is_following = True
 
-        # post = get_list_or_404(Post, user=user)  if the user does not have a post, return page 404
-        return render(request, self.template_name,
-                      {'user': request.user, 'form': form, 'posts': post, 'is_following': is_following})
+        return render(request, self.template_name, {
+            'user': user,
+            'form': form,
+            'posts': posts,
+            'is_following': is_following
+        })
 
-    def post(self, request):
-        # user = User.objects.get(pk=pk)
-        form = self.form_class(request.POST, instance=request.user)
+    def post(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        form = self.form_class(request.POST, instance=user)
         if form.is_valid():
             form.save()
-            request.user.profile.age = form.cleaned_data['age']
-            request.user.profile.bio = form.cleaned_data['bio']
-            request.user.profile.save()
-            
+            user.profile.age = form.cleaned_data['age']
+            user.profile.bio = form.cleaned_data['bio']
+            user.profile.save()
             messages.success(request, 'اطلاعات شما با موفقیت تغییر کرد', extra_tags='success')
             return redirect('home:home')
         return render(request, self.template_name, {'form': form})
